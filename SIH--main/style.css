@@ -1,0 +1,131 @@
+
+/* General Body and Font Styles */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    background-color: #f8fafc; /* A light grey background (slate-50) */
+    color: #334155; /* A dark slate color for text (slate-700) */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    width: 90%;
+    margin: 0 auto;
+}
+
+/* Header and Navigation Styles */
+.header {
+    background-color: #ffffff;
+    padding: 20px 0;
+    border-bottom: 1px solid #e2e8f0; /* slate-200 */
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.header nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #1e2b3b; /* slate-800 */
+    text-decoration: none;
+}
+
+.nav-links a {
+    color: #475569; /* slate-600 */
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 25px;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: #0d9488; /* teal-600 */
+}
+
+/* Main Content Styles */
+main {
+    flex-grow: 1;
+}
+
+/* Footer Styles */
+.footer {
+    text-align: center;
+    padding: 25px;
+    margin-top: auto;
+    color: #64748b; /* slate-500 */
+    background-color: #f1f5f9; /* slate-100 */
+    border-top: 1px solid #e2e8f0;
+}
+
+/* --- Homepage Styles --- */
+.hero { text-align: center; padding: 80px 0; }
+.hero h1 { font-size: 3rem; font-weight: 800; color: #1e2b3b; margin-bottom: 15px; }
+.hero p { font-size: 1.25rem; color: #64748b; margin-bottom: 30px; }
+.cta-button { display: inline-block; background-color: #0d9488; color: white; padding: 15px 30px; font-size: 1.1rem; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; }
+.cta-button:hover { background-color: #0f766e; transform: translateY(-2px); }
+
+/* --- Login Page Styles --- */
+.login-container{max-width:450px;margin:40px auto;padding:40px;background-color:#fff;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,.05)}.tab-switcher{display:flex;margin-bottom:20px;background-color:#f1f5f9;border-radius:8px;padding:5px}.tab-switcher.three-tabs{display:grid;grid-template-columns:1fr 1fr 1fr}.tab-btn{flex:1;padding:10px 15px;border:none;background:none;cursor:pointer;font-weight:600;color:#475569;border-radius:6px;transition:all .2s ease-in-out}.tab-btn.active{background-color:#fff;color:#0d9488;box-shadow:0 2px 5px rgba(0,0,0,.08)}.login-form h2{text-align:center;margin-bottom:10px}.login-form p{text-align:center;margin-top:0;margin-bottom:20px;color:#64748b}.login-form input{width:100%;padding:12px 15px;margin-bottom:15px;border:1px solid #cbd5e1;border-radius:8px;box-sizing:border-box}.login-form button{width:100%;padding:12px 15px;border:none;border-radius:8px;background-color:#0d9488;color:#fff;font-weight:600;cursor:pointer;transition:background-color .2s}.login-form button:hover{background-color:#0f766e}.error-message{color:#b91c1c;background-color:#fee2e2;padding:10px;border-radius:8px;text-align:center;margin-bottom:20px;font-weight:500;min-height:20px}
+
+/* --- Commuter Dashboard Styles --- */
+.search-dashboard{text-align:center;padding:40px 0}.search-dashboard h1{font-size:2.5rem;font-weight:800;color:#1e2b3b;margin-bottom:10px}.search-dashboard p{font-size:1.1rem;color:#64748b;margin-bottom:40px}.search-card{background-color:#fff;border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.07);border:1px solid #e2e8f0;max-width:900px;margin:0 auto}.search-grid{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}.input-group{display:flex;align-items:center;gap:10px}.from-to-group{position:relative;border-right:2px solid #f1f5f9;padding-right:20px}.input-with-icon{display:flex;align-items:center;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:0 15px;flex-grow:1}.input-with-icon .icon{color:#64748b;width:20px;height:20px;margin-right:10px}.input-with-icon input{border:none;background:none;outline:none;padding:15px 0;font-size:1rem;font-weight:500;width:100%;color:#1e2b3b}.swap-icon{background-color:#fff;border:1px solid #e2e8f0;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;color:#475569;cursor:pointer;transition:transform .2s ease}.swap-icon:hover{transform:rotate(180deg)}.date-button{background-color:#f1f5f9;border:1px solid transparent;color:#475569;font-weight:600;padding:12px 20px;border-radius:10px;cursor:pointer;transition:all .2s ease}.date-button.active,.date-button:hover{background-color:#fff1f2;color:#be123c;border-color:#fecdd3}.search-button-container{margin-top:-28px;position:relative;z-index:5}.search-cta-button{display:inline-flex;align-items:center;gap:10px;background-color:#c2410c;color:#fff;padding:15px 40px;font-size:1.1rem;font-weight:600;text-decoration:none;border:none;border-radius:12px;box-shadow:0 5px 15px rgba(194,65,12,.3);transition:all .2s ease-in-out;cursor:pointer}.search-cta-button:hover{background-color:#9a3412;transform:translateY(-2px)}@media (max-width:768px){.search-grid{grid-template-columns:1fr}.from-to-group{border-right:none!important;padding-right:0!important}}
+
+/* --- Live Map Styles --- */
+.map-container { 
+    padding: 40px 0; 
+}
+#map { 
+    height: 70vh; 
+    width: 100%; 
+    border-radius: 12px; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+    border: 3px solid white;
+}
+#map-status { 
+    text-align: center; 
+    margin-top: 20px; 
+    font-weight: 600; 
+    font-size: 1.1rem;
+    padding: 12px; 
+    background-color: #fff; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+    color: #475569;
+}
+
+/* --- Driver & Authority Dashboard Styles --- */
+.driver-dashboard, .dashboard-container { max-width: 800px; margin: 20px auto; }
+.status-card { background-color: #ffffff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+.status-card h2 { margin-top: 0; }
+.button-group { display: flex; gap: 15px; margin-top: 15px; }
+.button-group button, .button-link { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.2s; }
+#start-btn, .button-link { background-color: #0d9488; color: white; }
+#stop-btn { background-color: #e2e8f0; color: #64748b; }
+#stop-btn:not([disabled]) { background-color: #dc2626; color: white; }
+#stop-btn[disabled] { cursor: not-allowed; }
+.log-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+.log-table th, .log-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+.log-table th { background-color: #f1f5f9; font-weight: 600; }
+
+/* --- QR Scanner Styles --- */
+.scanner-container { max-width: 500px; margin: 20px auto; text-align: center; padding: 30px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+.scanner-container h1 { margin-top: 0; }
+#qr-reader-container { position: relative; width: 300px; height: 300px; margin: 30px auto; border-radius: 12px; overflow: hidden; box-shadow: inset 0 0 0 4px rgba(0,0,0,0.1); }
+#qr-reader { width: 100%; height: 100%; }
+#qr-reader video { width: 100% !important; height: 100% !important; object-fit: cover !important; }
+#qr-reader-container::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, transparent, #0d9488, transparent); box-shadow: 0 0 10px #0d9488; animation: scan 2.5s linear infinite; }
+@keyframes scan { 0% { transform: translateY(0); } 100% { transform: translateY(300px); } }
+.status-message { margin-top: 20px; font-weight: 600; padding: 12px 20px; border-radius: 8px; border: 1px solid transparent; transition: all 0.3s ease-in-out; }
+.status-message.info { background-color: #f1f5f9; color: #475569; border-color: #e2e8f0; }
+.status-message.success { background-color: #dcfce7; color: #166534; border-color: #4ade80; }
+.status-message.error { background-color: #fee2e2; color: #991b1b; border-color: #f87171; }
+

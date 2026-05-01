@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Map - Pravah</title>
+    <!-- Master Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Leaflet.js Stylesheet (for the map) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="icon" href="data:;base64,=">
+</head>
+<body>
+    <header class="header">
+        <nav class="container">
+            <!-- This link now takes the user back to the journey planner -->
+            <a href="commuter_dashboard.html" class="logo">Back to Dashboard</a>
+            <div class="nav-links">
+                <a href="login.html">Logout</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="map-container">
+            <!-- This is where the map will be rendered -->
+            <div id="map"></div>
+            <!-- This will show the live status -->
+            <p id="map-status">Initializing map and connecting to live feed...</p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 Pravah. All rights reserved.</p>
+    </footer>
+
+    <!-- Firebase SDKs (Software Development Kits) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <!-- Leaflet.js Library -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Your custom map logic -->
+    <script src="map.js"></script>
+</body>
+</html>
+

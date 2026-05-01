@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authority Dashboard - Pravah</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="container">
+            <a href="index.html" class="logo">Pravah - Authority Portal</a>
+            <div class="nav-links">
+                <a href="login.html">Logout</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>QR Code Verification Log</h1>
+        <p>This log updates in real-time as drivers scan QR codes at stops.</p>
+        
+        <div class="log-container">
+            <table class="log-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Bus ID</th>
+                        <th>Stop Name (from QR)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="log-body">
+                    <!-- Log entries will be added here by JavaScript -->
+                    <tr>
+                        <td colspan="4" class="placeholder">Waiting for first scan...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 Project Pravah. SIH Project.</p>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <!-- Authority Dashboard Logic -->
+    <script src="authority.js"></script>
+</body>
+</html>

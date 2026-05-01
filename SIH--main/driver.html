@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Bus - APP</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js" defer></script>
+</head>
+<body>
+
+    <header>
+        <h1>Smart Bus</h1>
+        <nav>
+            <a href="login.html">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="driver-container">
+            <h2>Bus Location Tracking</h2>
+            <div id="status-box">
+                <p><strong>Status:</strong> <span id="status-message">Idle</span></p>
+                <p><strong>Bus ID:</strong> <span id="bus-id">BR01PA1234</span></p>
+                <p><strong>Coordinates:</strong> <span id="coordinates">--</span></p>
+            </div>
+            <div class="driver-controls">
+                <button id="start-btn" class="driver-button start">Start Transmitting</button>
+                <button id="stop-btn" class="driver-button stop">Stop Transmitting</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Pravah Project Team</p>
+    </footer>
+
+    <script src="driver.js"></script>
+</body>
+</html>

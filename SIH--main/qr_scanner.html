@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan QR Code - Pravah</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="container">
+            <a href="driver.html" class="logo">Back to Driver App</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="scanner-container">
+            <h1>Scan Bus Stop QR Code</h1>
+            <p>Center the QR code inside the viewfinder below.</p>
+            
+            <!-- NEW: A styled container for the viewfinder effect -->
+            <div id="qr-reader-container">
+                <div id="qr-reader"></div>
+            </div>
+            
+            <div id="scan-status" class="status-message">Initializing camera...</div>
+        </div>
+    </main>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <!-- QR Code Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+
+    <!-- Your custom scanner logic -->
+    <script src="scanner.js"></script>
+</body>
+</html>
+

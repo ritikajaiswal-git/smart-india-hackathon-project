@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBus - Real-Time Bus Tracking</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/all.min.css" />
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4338ca;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #374151;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #4338ca;
+        }
+
+        .main-container {
+            display: flex;
+            height: calc(100vh - 80px);
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .sidebar {
+            width: 350px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .map-container {
+            flex: 1;
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        .search-section {
+            margin-bottom: 2rem;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #4338ca;
+        }
+
+        .route-selector {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            margin-top: 1rem;
+            background: white;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bus-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .bus-item {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid #10b981;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .bus-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .bus-number {
+            font-weight: bold;
+            color: #1f2937;
+            font-size: 1.1rem;
+        }
+
+        .bus-status {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .eta {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .distance {
+            color: #6b7280;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-active { background-color: #10b981; }
+        .status-delayed { background-color: #f59e0b; }
+        .status-offline { background-color: #ef4444; }
+
+        .stats-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #4338ca;
+        }
+
+        .floating-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+        }
+
+        .control-btn:hover {
+            background: white;
+        }
+
+        .refresh-indicator {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .refresh-indicator.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                height: auto;
+                min-height: calc(100vh - 80px);
+            }
+            
+            .sidebar {
+                width: 100%;
+                order: 2;
+                max-height: 400px;
+            }
+            
+            .map-container {
+                height: 60vh;
+                order: 1;
+            }
+        }
+
+        /* Custom Leaflet popup styles */
+        .custom-popup {
+            text-align: center;
+        }
+
+        .popup-title {
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .popup-info {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        /* Custom bus marker styles */
+        .bus-marker {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .bus-marker:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+        }
+
+        .bus-marker.delayed {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .bus-marker.offline {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .bus-marker i {
+            color: white;
+            font-size: 16px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* Pulse animation for active buses */
+        @keyframes pulse {
+            0% { box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4), 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4), 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4), 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Moving trail effect */
+        .bus-trail {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(16, 185, 129, 0.6);
+            border-radius: 50%;
+            animation: fadeOut 2s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top-color: #4338ca;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <i class="fas fa-bus"></i>
+                SmartBus
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#routes">Routes</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="search-section">
+                <h3 class="section-title">
+                    <i class="fas fa-search"></i>
+                    Find Your Route
+                </h3>
+                <input type="text" class="search-box" placeholder="Search routes, stops, or destinations..." id="searchInput">
+                <select class="route-selector" id="routeSelector">
+                    <option value="">Select a route</option>
+                    <option value="route1">Route 1: Gandhi Maidan - AIIMS</option>
+                    <option value="route2">Route 2: Patna Junction - NIT</option>
+                    <option value="route3">Route 3: Boring Road - Danapur</option>
+                    <option value="route4">Route 4: Kankarbagh - Patliputra</option>
+                </select>
+            </div>
+
+            <div class="buses-section">
+                <h3 class="section-title">
+                    <i class="fas fa-bus"></i>
+                    Live Buses
+                    <div class="loading" id="loadingIndicator"></div>
+                </h3>
+                <div class="bus-list" id="busList">
+                    <!-- Buses will be dynamically populated here -->
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <h3 class="section-title">
+                    <i class="fas fa-chart-bar"></i>
+                    System Status
+                </h3>
+                <div class="stat-item">
+                    <span>Active Buses</span>
+                    <span class="stat-value" id="activeBuses">12</span>
+                </div>
+                <div class="stat-item">
+                    <span>Routes Covered</span>
+                    <span class="stat-value">4</span>
+                </div>
+                <div class="stat-item">
+                    <span>Accuracy</span>
+                    <span class="stat-value">95%</span>
+                </div>
+                <div class="stat-item">
+                    <span>Last Update</span>
+                    <span class="stat-value" id="lastUpdate">Just now</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="floating-controls">
+                <button class="control-btn" onclick="centerMap()" title="Center Map">
+                    <i class="fas fa-crosshairs"></i>
+                </button>
+                <button class="control-btn" onclick="toggleTraffic()" title="Toggle Traffic">
+                    <i class="fas fa-road"></i>
+                </button>
+                <button class="control-btn" onclick="refreshData()" title="Refresh Data">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+            <div class="refresh-indicator" id="refreshIndicator">
+                <i class="fas fa-sync-alt"></i> Updating...
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+
+    <script>
+        // Initialize the map centered on Patna, Bihar
+        let map = L.map('map').setView([25.5941, 85.1376], 13);
+
+        // Add tile layer (using OpenStreetMap - free alternative to Google Maps)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Store bus markers and routes
+        let busMarkers = {};
+        let routePolylines = {};
+        let busStops = {};
+
+        // Sample bus data (in real implementation, this would come from your API)
+        let busData = [
+            {
+                id: 'BUS001',
+                route: 'Route 1',
+                number: 'BR-01-1234',
+                lat: 25.5941,
+                lng: 85.1376,
+                speed: 25,
+                eta: '5 mins',
+                status: 'active',
+                lastQRScan: 'Gandhi Maidan - 2 mins ago',
+                direction: 45, // heading in degrees
+                targetLat: 25.5950,
+                targetLng: 85.1390
+            },
+            {
+                id: 'BUS002',
+                route: 'Route 2',
+                number: 'BR-01-5678',
+                lat: 25.6093,
+                lng: 85.1376,
+                speed: 0,
+                eta: '12 mins',
+                status: 'delayed',
+                lastQRScan: 'Patna Junction - 5 mins ago',
+                direction: 90,
+                targetLat: 25.6100,
+                targetLng: 85.1400
+            },
+            {
+                id: 'BUS003',
+                route: 'Route 1',
+                number: 'BR-01-9012',
+                lat: 25.5800,
+                lng: 85.1500,
+                speed: 30,
+                eta: '8 mins',
+                status: 'active',
+                lastQRScan: 'AIIMS - 1 min ago',
+                direction: 180,
+                targetLat: 25.5780,
+                targetLng: 85.1480
+            },
+            {
+                id: 'BUS004',
+                route: 'Route 3',
+                number: 'BR-01-3456',
+                lat: 25.6200,
+                lng: 85.1600,
+                speed: 20,
+                eta: '15 mins',
+                status: 'active',
+                lastQRScan: 'Boring Road - 3 mins ago',
+                direction: 270,
+                targetLat: 25.6180,
+                targetLng: 85.1580
+            }
+        ];
+
+        // Sample bus stops data
+        let busStopsData = [
+            { id: 'STOP001', name: 'Gandhi Maidan', lat: 25.5941, lng: 85.1376, routes: ['Route 1'] },
+            { id: 'STOP002', name: 'Patna Junction', lat: 25.6093, lng: 85.1376, routes: ['Route 2'] },
+            { id: 'STOP003', name: 'AIIMS Patna', lat: 25.5800, lng: 85.1500, routes: ['Route 1'] },
+            { id: 'STOP004', name: 'NIT Patna', lat: 25.6220, lng: 85.1722, routes: ['Route 2'] },
+        ];
+
+        // Custom bus icon with rotation and status-based styling
+        function createBusIcon(status, direction = 0) {
+            const statusClass = status === 'active' ? '' : status;
+            return L.divIcon({
+                className: `bus-marker ${statusClass}`,
+                html: `<i class="fas fa-bus" style="transform: rotate(${direction}deg);"></i>`,
+                iconSize: [35, 35],
+                iconAnchor: [17, 17]
+            });
+        }
+
+        // Custom bus stop icon
+        const stopIcon = L.divIcon({
+            className: 'stop-marker',
+            html: '<i class="fas fa-map-marker-alt" style="color: #ef4444; font-size: 18px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);"></i>',
+            iconSize: [25, 25],
+            iconAnchor: [12, 25]
+        });
+
+        // Add bus stops to map
+        function addBusStops() {
+            busStopsData.forEach(stop => {
+                const marker = L.marker([stop.lat, stop.lng], { icon: stopIcon })
+                    .addTo(map)
+                    .bindPopup(`
+                        <div class="custom-popup">
+                            <div class="popup-title">${stop.name}</div>
+                            <div class="popup-info">Routes: ${stop.routes.join(', ')}</div>
+                        </div>
+                    `);
+                busStops[stop.id] = marker;
+            });
+        }
+
+        // Add buses to map with animated movement
+        function addBuses() {
+            busData.forEach(bus => {
+                const icon = createBusIcon(bus.status, bus.direction);
+                const marker = L.marker([bus.lat, bus.lng], { icon })
+                    .addTo(map)
+                    .bindPopup(`
+                        <div class="custom-popup">
+                            <div class="popup-title">🚌 ${bus.number}</div>
+                            <div class="popup-info">
+                                <strong>${bus.route}</strong><br>
+                                Speed: ${bus.speed} km/h<br>
+                                ETA: ${bus.eta}<br>
+                                Status: <span style="color: ${getStatusColor(bus.status)}">${bus.status.toUpperCase()}</span><br>
+                                Last QR: ${bus.lastQRScan}
+                            </div>
+                        </div>
+                    `);
+                busMarkers[bus.id] = marker;
+            });
+        }
+
+        // Get color based on bus status
+        function getStatusColor(status) {
+            switch(status) {
+                case 'active': return '#10b981';
+                case 'delayed': return '#f59e0b';
+                case 'offline': return '#ef4444';
+                default: return '#6b7280';
+            }
+        }
+
+        // Smooth animation function for bus movement
+        function animateBusMovement(busId, fromLat, fromLng, toLat, toLng, duration = 2000) {
+            const marker = busMarkers[busId];
+            if (!marker) return;
+
+            const startTime = Date.now();
+            const startLat = fromLat;
+            const startLng = fromLng;
+            
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Smooth easing function
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                
+                const currentLat = startLat + (toLat - startLat) * easeProgress;
+                const currentLng = startLng + (toLng - startLng) * easeProgress;
+                
+                marker.setLatLng([currentLat, currentLng]);
+                
+                // Create movement trail
+                createMovementTrail(currentLat, currentLng);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+
+        // Create visual trail for moving buses
+        function createMovementTrail(lat, lng) {
+            const trailPoint = L.circleMarker([lat, lng], {
+                radius: 3,
+                fillColor: '#10b981',
+                color: '#10b981',
+                weight: 1,
+                opacity: 0.6,
+                fillOpacity: 0.3
+            }).addTo(map);
+
+            // Remove trail after animation
+            setTimeout(() => {
+                map.removeLayer(trailPoint);
+            }, 2000);
+        }
+
+        // Update bus position with smooth animation
+        function updateBusPosition(busId, newLat, newLng, newDirection, newStatus) {
+            const bus = busData.find(b => b.id === busId);
+            if (!bus) return;
+
+            const oldLat = bus.lat;
+            const oldLng = bus.lng;
+
+            // Animate movement from old position to new position
+            animateBusMovement(busId, oldLat, oldLng, newLat, newLng);
+
+            // Update bus data
+            bus.lat = newLat;
+            bus.lng = newLng;
+            bus.direction = newDirection;
+            bus.status = newStatus;
+
+            // Update marker icon with new direction and status
+            const newIcon = createBusIcon(newStatus, newDirection);
+            busMarkers[busId].setIcon(newIcon);
+
+            // Update popup content
+            busMarkers[busId].setPopupContent(`
+                <div class="custom-popup">
+                    <div class="popup-title">🚌 ${bus.number}</div>
+                    <div class="popup-info">
+                        <strong>${bus.route}</strong><br>
+                        Speed: ${bus.speed} km/h<br>
+                        ETA: ${bus.eta}<br>
+                        Status: <span style="color: ${getStatusColor(bus.status)}">${bus.status.toUpperCase()}</span><br>
+                        Last QR: ${bus.lastQRScan}
+                    </div>
+                </div>
+            `);
+        }
+
+        // WebSocket connection simulation for real-time GPS updates
+        let isConnected = false;
+        let updateInterval;
+
+        // Simulate WebSocket connection for GPS updates
+        function initializeRealTimeUpdates() {
+            console.log('🔄 Initializing real-time GPS updates...');
+            isConnected = true;
+            
+            // Simulate receiving GPS data every 2 seconds
+            updateInterval = setInterval(() => {
+                if (isConnected) {
+                    // Simulate receiving real GPS data from backend
+                    simulateGPSDataReceived();
+                }
+            }, 2000); // Update every 2 seconds
+            
+            console.log('✅ Real-time GPS updates active (every 2 seconds)');
+        }
+
+        // Simulate receiving GPS data from your backend API
+        function simulateGPSDataReceived() {
+            busData.forEach(bus => {
+                if (bus.status === 'active') {
+                    // Simulate real GPS coordinates (in production, this comes from your API)
+                    const newGPSData = generateRealisticGPSUpdate(bus);
+                    
+                    // Process GPS update immediately
+                    processGPSUpdate(bus.id, newGPSData);
+                    
+                    // Update ETA and other real-time data
+                    updateBusMetadata(bus, newGPSData);
+                }
+            });
+
+            // Update UI with latest data
+            updateBusList();
+            updateLastUpdateTime();
+        }
+
+        // Generate realistic GPS coordinates (simulates real GPS data)
+        function generateRealisticGPSUpdate(bus) {
+            // In production, this would be actual GPS data from your backend:
+            // const response = await fetch(`/api/buses/${bus.id}/location`);
+            // return await response.json();
+            
+            const speedKmh = bus.speed;
+            const speedMs = speedKmh / 3.6; // Convert km/h to m/s
+            const timeInterval = 2; // 2 seconds
+            const distanceM = speedMs * timeInterval; // Distance in meters
+            
+            // Convert to approximate lat/lng degrees (very rough conversion)
+            const distanceDegrees = distanceM / 111320; // 1 degree ≈ 111.32 km
+            
+            let newLat, newLng, newDirection;
+            
+            // Generate realistic movement towards target or random direction
+            if (Math.abs(bus.lat - bus.targetLat) < 0.0005 && Math.abs(bus.lng - bus.targetLng) < 0.0005) {
+                // Generate new realistic target (next bus stop or route point)
+                bus.targetLat = bus.lat + (Math.random() - 0.5) * 0.008;
+                bus.targetLng = bus.lng + (Math.random() - 0.5) * 0.008;
+            }
+            
+            // Calculate movement towards target
+            const deltaLat = bus.targetLat - bus.lat;
+            const deltaLng = bus.targetLng - bus.lng;
+            const targetDistance = Math.sqrt(deltaLat * deltaLat + deltaLng * deltaLng);
+            
+            if (targetDistance > 0 && speedKmh > 0) {
+                // Move towards target
+                const normalizedDeltaLat = deltaLat / targetDistance;
+                const normalizedDeltaLng = deltaLng / targetDistance;
+                
+                newLat = bus.lat + (normalizedDeltaLat * distanceDegrees);
+                newLng = bus.lng + (normalizedDeltaLng * distanceDegrees);
+                
+                // Calculate bearing/direction
+                newDirection = Math.atan2(deltaLng, deltaLat) * (180 / Math.PI) + 90;
+                if (newDirection < 0) newDirection += 360;
+            } else {
+                // Stationary or no target
+                newLat = bus.lat;
+                newLng = bus.lng;
+                newDirection = bus.direction;
+            }
+
+            return {
+                lat: newLat,
+                lng: newLng,
+                direction: newDirection,
+                timestamp: new Date().toISOString(),
+                accuracy: Math.random() * 10 + 5, // GPS accuracy in meters
+                speed: speedKmh
+            };
+        }
+
+        // Process GPS update with smooth animation
+        function processGPSUpdate(busId, gpsData) {
+            const bus = busData.find(b => b.id === busId);
+            if (!bus || !busMarkers[busId]) return;
+
+            const oldLat = bus.lat;
+            const oldLng = bus.lng;
+            const newLat = gpsData.lat;
+            const newLng = gpsData.lng;
+
+            // Only animate if there's significant movement (avoid jitter)
+            const distance = calculateDistance(oldLat, oldLng, newLat, newLng);
+            if (distance > 5) { // Minimum 5 meters movement
+                
+                console.log(`🚌 ${bus.number}: Moving ${distance.toFixed(1)}m - GPS Update`);
+                
+                // Animate movement smoothly over 2 seconds
+                animateBusMovement(busId, oldLat, oldLng, newLat, newLng, 1800);
+                
+                // Update bus data
+                bus.lat = newLat;
+                bus.lng = newLng;
+                bus.direction = gpsData.direction;
+                
+                // Update marker icon with new direction
+                const newIcon = createBusIcon(bus.status, gpsData.direction);
+                busMarkers[busId].setIcon(newIcon);
+                
+                // Create GPS accuracy circle (optional visualization)
+                showGPSAccuracy(busId, newLat, newLng, gpsData.accuracy);
+            }
+        }
+
+        // Update bus metadata (ETA, status, etc.)
+        function updateBusMetadata(bus, gpsData) {
+            // Simulate dynamic ETA calculation based on real movement
+            if (gpsData.speed > 0) {
+                const randomETA = Math.floor(Math.random() * 15) + 3;
+                bus.eta = `${randomETA} mins`;
+                bus.speed = Math.round(gpsData.speed);
+            } else {
+                bus.eta = 'Stopped';
+                bus.speed = 0;
+            }
+
+            // Update last GPS timestamp
+            bus.lastGPSUpdate = gpsData.timestamp;
+            
+            // Update popup with fresh data
+            if (busMarkers[bus.id]) {
+                busMarkers[bus.id].setPopupContent(`
+                    <div class="custom-popup">
+                        <div class="popup-title">🚌 ${bus.number}</div>
+                        <div class="popup-info">
+                            <strong>${bus.route}</strong><br>
+                            Speed: ${bus.speed} km/h<br>
+                            ETA: ${bus.eta}<br>
+                            Status: <span style="color: ${getStatusColor(bus.status)}">${bus.status.toUpperCase()}</span><br>
+                            GPS Accuracy: ±${Math.round(gpsData.accuracy)}m<br>
+                            Last Update: ${new Date().toLocaleTimeString()}
+                        </div>
+                    </div>
+                `);
+            }
+        }
+
+        // Calculate distance between two GPS points (in meters)
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371000; // Earth's radius in meters
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLng/2) * Math.sin(dLng/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        // Show GPS accuracy circle (optional visual feedback)
+        let accuracyCircles = {};
+        function showGPSAccuracy(busId, lat, lng, accuracy) {
+            // Remove previous accuracy circle
+            if (accuracyCircles[busId]) {
+                map.removeLayer(accuracyCircles[busId]);
+            }
+
+            // Add new accuracy circle
+            accuracyCircles[busId] = L.circle([lat, lng], {
+                radius: accuracy,
+                fillColor: '#4338ca',
+                color: '#4338ca',
+                weight: 1,
+                opacity: 0.3,
+                fillOpacity: 0.1
+            }).addTo(map);
+
+            // Remove accuracy circle after 3 seconds
+            setTimeout(() => {
+                if (accuracyCircles[busId]) {
+                    map.removeLayer(accuracyCircles[busId]);
+                    delete accuracyCircles[busId];
+                }
+            }, 3000);
+        }
+
+        // Update last update time
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            document.getElementById('lastUpdate').textContent = timeString;
+        }
+
+        // Real-time connection status management
+        function toggleRealTimeUpdates() {
+            if (isConnected) {
+                clearInterval(updateInterval);
+                isConnected = false;
+                console.log('⏸️ Real-time GPS updates paused');
+            } else {
+                initializeRealTimeUpdates();
+            }
+        }
+
+        // Update bus list in sidebar
+        function updateBusList() {
+            const busList = document.getElementById('busList');
+            busList.innerHTML = '';
+
+            busData.forEach(bus => {
+                const statusClass = `status-${bus.status}`;
+                const busItem = document.createElement('div');
+                busItem.className = 'bus-item';
+                busItem.onclick = () => focusOnBus(bus.id);
+                
+                busItem.innerHTML = `
+                    <div class="bus-number">
+                        <span class="status-indicator ${statusClass}"></span>
+                        ${bus.number}
+                    </div>
+                    <div class="bus-status">
+                        <span class="eta">ETA: ${bus.eta}</span>
+                        <span class="distance">${bus.speed} km/h</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #6b7280; margin-top: 0.25rem;">
+                        ${bus.route} • ${bus.lastQRScan}
+                    </div>
+                `;
+                
+                busList.appendChild(busItem);
+            });
+
+            // Update active buses count
+            const activeBuses = busData.filter(bus => bus.status === 'active').length;
+            document.getElementById('activeBuses').textContent = activeBuses;
+        }
+
+        // Focus on specific bus
+        function focusOnBus(busId) {
+            const bus = busData.find(b => b.id === busId);
+            if (bus && busMarkers[busId]) {
+                map.setView([bus.lat, bus.lng], 16);
+                busMarkers[busId].openPopup();
+            }
+        }
+
+        // Center map on user location
+        function centerMap() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    map.setView([lat, lng], 15);
+                    
+                    // Add user location marker
+                    L.marker([lat, lng])
+                        .addTo(map)
+                        .bindPopup('Your Location')
+                        .openPopup();
+                });
+            } else {
+                // Fallback to Patna center
+                map.setView([25.5941, 85.1376], 13);
+            }
+        }
+
+        // Toggle traffic layer (placeholder)
+        let trafficLayer = null;
+        function toggleTraffic() {
+            if (trafficLayer) {
+                map.removeLayer(trafficLayer);
+                trafficLayer = null;
+            } else {
+                // In real implementation, you would add a traffic tile layer here
+                alert('Traffic layer would be toggled here');
+            }
+        }
+
+        // Refresh data with real-time GPS simulation
+        function refreshData() {
+            const indicator = document.getElementById('refreshIndicator');
+            indicator.classList.add('show');
+
+            console.log('🔄 Manual refresh triggered');
+            
+            // Force immediate GPS update for all buses
+            simulateGPSDataReceived();
+            
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 1500);
+        }
+
+        // Initialize real-time GPS tracking when page loads
+        function startRealTimeTracking() {
+            console.log('🚌 Starting real-time bus tracking system...');
+            
+            // Start GPS updates every 2 seconds
+            initializeRealTimeUpdates();
+            
+            // Optional: Manual refresh button still works
+            // Less frequent full system check every 60 seconds
+            setInterval(() => {
+                console.log('🔍 System health check...');
+                // In production: check connection, validate data, handle errors
+            }, 60000);
+        }
+
+        // Route selector change handler
+        document.getElementById('routeSelector').addEventListener('change', function() {
+            const selectedRoute = this.value;
+            console.log('🛣️ Selected route:', selectedRoute);
+            // Filter buses and stops based on selected route
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const filteredBuses = busData.filter(bus => 
+                bus.number.toLowerCase().includes(searchTerm) ||
+                bus.route.toLowerCase().includes(searchTerm)
+            );
+            console.log('🔍 Search results:', filteredBuses.length, 'buses found');
+        });
+
+        // Initialize map and start real-time tracking
+        addBusStops();
+        addBuses();
+        updateBusList();
+        
+        // Start real-time GPS updates every 2 seconds
+        startRealTimeTracking();
+
+        console.log('✅ Bus tracking system initialized with 2-second GPS updates');
+
+        // Set up real-time updates (WebSocket connection would go here)
+        function setupRealTimeUpdates() {
+            // In real implementation, you would connect to WebSocket here
+            // const socket = io('your-websocket-server');
+            // socket.on('busUpdate', (data) => {
+            //     updateBusPosition(data);
+            // });
+        }
+
+        // Update last update time
+        function updateTimestamp() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            document.getElementById('lastUpdate').textContent = timeString;
+        }
+
+        // Update timestamp every minute
+        setInterval(updateTimestamp, 60000);
+
+        console.log('Bus tracking system initialized with Leaflet.js');
+    </script>
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SmartBus</title>
+    <link rel="icon" href="data:;base64,=">
+    <style>
+        /* General Body and Font Styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: #f8fafc; /* A light grey background (slate-50) */
+            color: #334155; /* A dark slate color for text (slate-700) */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        /* Header and Navigation Styles */
+        .header {
+            background-color: #ffffff;
+            padding: 20px 0;
+            border-bottom: 1px solid #e2e8f0; /* slate-200 */
+            position: sticky;
+            top: 0;
+            z-index: 20; /* Ensure header is on top */
+        }
+
+        .header nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #1e2b3b; /* slate-800 */
+            text-decoration: none;
+        }
+
+        .nav-links a {
+            color: #475569; /* slate-600 */
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 25px;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #0d9488; /* teal-600 */
+        }
+
+        /* Main Content Styles */
+        main {
+            flex-grow: 1;
+        }
+
+        /* --- UPDATED HERO BANNER STYLES --- */
+        .hero-banner {
+            position: relative;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .banner-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .banner-bg svg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .banner-content {
+            position: relative;
+            z-index: 2;
+        }
+        .banner-content h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #1e2b3b; /* UPDATED: Dark text for better contrast */
+            text-shadow: 0 1px 2px rgba(255,255,255,0.5); /* Lighter shadow */
+            margin: 0;
+        }
+        .banner-content p {
+            font-size: 1.25rem;
+            color: #475569; /* UPDATED: Darker text */
+            text-shadow: none; /* Removed shadow */
+        }
+
+        /* --- Commuter Dashboard Styles --- */
+        .search-dashboard{
+            padding: 0;
+            margin-top: -100px; /* Pulls the card up over the banner */
+            position: relative;
+            z-index: 10;
+        }
+        
+        .search-card{background-color:#fff;border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.1);border:1px solid #e2e8f0;max-width:900px;margin:20px auto 0 auto;}.search-grid{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}.input-group{display:flex;align-items:center;gap:10px}.from-to-group{position:relative;border-right:2px solid #f1f5f9;padding-right:20px}.input-with-icon{display:flex;align-items:center;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:0 15px;flex-grow:1}.input-with-icon .icon{color:#64748b;width:20px;height:20px;margin-right:10px}.input-with-icon input{border:none;background:none;outline:none;padding:15px 0;font-size:1rem;font-weight:500;width:100%;color:#1e2b3b}.swap-icon{background-color:#fff;border:1px solid #e2e8f0;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;color:#475569;cursor:pointer;transition:transform .2s ease}.swap-icon:hover{transform:rotate(180deg)}.date-button{background-color:#f1f5f9;border:1px solid transparent;color:#475569;font-weight:600;padding:12px 20px;border-radius:10px;cursor:pointer;transition:all .2s ease}.date-button.active,.date-button:hover{background-color:#fce7f3;color:#be185d;border-color:#fbcfe8}.search-button-container{margin-top:20px; text-align:center; padding-top: 20px;}.search-cta-button{display:inline-flex;align-items:center;gap:10px;background-color:#db2777;color:#fff;padding:15px 40px;font-size:1.1rem;font-weight:600;text-decoration:none;border:none;border-radius:12px;box-shadow:0 5px 15px rgba(219,39,119,.3);transition:all .2s ease-in-out;cursor:pointer}.search-cta-button:hover{background-color:#be185d;transform:translateY(-2px)}@media (max-width:768px){.search-grid{grid-template-columns:1fr}.from-to-group{border-right:none!important;padding-right:0!important;margin-bottom:10px;}}
+
+        /* --- NEW BUS RESULTS STYLES --- */
+        #bus-results-section {
+            max-width: 900px;
+            margin: 40px auto 0;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .results-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e2b3b;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .bus-list-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            align-items: center;
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .bus-list-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        .bus-details .route-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e2b3b;
+        }
+        .bus-details .route-path {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin: 4px 0 0 0;
+        }
+        .bus-timing {
+            text-align: center;
+        }
+        .bus-timing .eta-label {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .bus-timing .eta-time {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0d9488;
+        }
+        .bus-action {
+            text-align: right;
+        }
+        .track-button {
+            background-color: #0d9488;
+            color: white;
+            font-weight: 600;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+        .track-button:hover {
+            background-color: #0f766e;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Footer Styles */
+        .footer {
+            text-align: center;
+            padding: 25px;
+            margin-top: auto;
+            color: #64748b; /* slate-500 */
+            background-color: #f1f5f9; /* slate-100 */
+            border-top: 1px solid #e2e8f0;
+        }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="container">
+            <a href="index.html" class="logo">SmartBus</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="schedule.html">Schedule</a>
+                <a href="login.html">Logout</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Banner Section -->
+    <section class="hero-banner">
+        <div class="banner-bg">
+            <svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <linearGradient id="bannerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color: #a5b4fc;" /> <!-- Indigo 300 -->
+                        <stop offset="100%" style="stop-color: #fbcfe8;" /> <!-- Pink 200 -->
+                    </linearGradient>
+                </defs>
+                <rect width="1440" height="320" fill="url(#bannerGradient)" />
+                <path fill="#c7d2fe" opacity="0.5" d="M0,224L48,213.3C96,203,192,181,288,176C384,171,480,181,576,197.3C672,213,768,235,864,240C960,245,1056,235,1152,208C1248,181,1344,139,1392,117.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                <path fill="#a5b4fc" opacity="0.6" d="M0,256L60,245.3C120,235,240,213,360,202.7C480,192,600,192,720,208C840,224,960,256,1080,261.3C1200,267,1320,245,1380,234.7L1440,224L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+                <path d="M -50 290 C 400 270, 1000 310, 1500 280" stroke="#64748b" stroke-width="20" fill="none" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <div class="banner-content container">
+            <h1>Welcome to SmartBus</h1>
+            <p>Your guide to smart and simple city travel.</p>
+        </div>
+    </section>
+
+    <main class="container">
+        <div class="search-dashboard">
+            <div class="search-card">
+                <div class="search-grid">
+                    <!-- From & To Inputs -->
+                    <div class="input-group from-to-group">
+                        <div class="input-with-icon">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0z" fill="none"/><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5zM18 11H6V6h12v5z"/></svg>
+                            <input type="text" placeholder="From" value="Patna Junction">
+                        </div>
+                        <div class="swap-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px"><path d="M0 0h24v24H0z" fill="none"/><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>
+                        </div>
+                        <div class="input-with-icon">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                            <input type="text" placeholder="To" value="Gandhi Maidan">
+                        </div>
+                    </div>
+                    <!-- Date Input -->
+                    <div class="input-group">
+                         <div class="input-with-icon">
+                             <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+                            <input type="text" value="22 Sep, 2025" onfocus="(this.type='date')" onblur="(this.type='text')">
+                        </div>
+                        <button class="date-button active">Today</button>
+                        <button class="date-button">Tomorrow</button>
+                    </div>
+                </div>
+                 <div class="search-button-container">
+                     <!-- This is the button that triggers the results to show -->
+                     <a href="./trackpage.html" target="_self">
+                        <button id="search-buses-btn" class="search-cta-button">
+                        
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20px" height="20px"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        Search Buses
+                    </button>
+                     </a>
+                     
+                </div>
+            </div>
+            
+            <!-- NEW: Bus Results Section (initially hidden) -->
+            <section id="bus-results-section" style="display: none;">
+                <h2 class="results-title">Available Buses</h2>
+                <div id="bus-list" class="bus-list">
+                    <!-- Bus results will be dynamically inserted here by JavaScript -->
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 SmartBus. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchBtn = document.getElementById('search-buses-btn');
+            const resultsSection = document.getElementById('bus-results-section');
+            const busListContainer = document.getElementById('bus-list');
+
+            // --- Dummy Data for the Demo ---
+            const availableBuses = [
+                {
+                    routeName: 'Route 5A',
+                    from: 'Patna Junction',
+                    to: 'Gandhi Maidan',
+                    eta: '5 min',
+                    busId: 'bus-001'
+                },
+                {
+                    routeName: 'Route 12C',
+                    from: 'Patna Junction',
+                    to: 'Gandhi Maidan',
+                    eta: '12 min',
+                    busId: 'bus-002'
+                },
+                {
+                    routeName: 'Rapid Metro',
+                    from: 'Patna Junction',
+                    to: 'Gandhi Maidan',
+                    eta: '18 min',
+                    busId: 'bus-003'
+                }
+            ];
+
+            // --- Event Listener for the Search Button ---
+            searchBtn.addEventListener('click', () => {
+                // Clear any old results
+                busListContainer.innerHTML = '';
+
+                // Create and append the new bus list items
+                availableBuses.forEach(bus => {
+                    const busItem = document.createElement('div');
+                    busItem.classList.add('bus-list-item');
+
+                    busItem.innerHTML = `
+                        <div class="bus-details">
+                            <span class="route-name">${bus.routeName}</span>
+                            <p class="route-path">${bus.from} → ${bus.to}</p>
+                        </div>
+                        <div class="bus-timing">
+                            <span class="eta-label">Arrives in</span>
+                            <span class="eta-time">${bus.eta}</span>
+                        </div>
+                        <div class="bus-action">
+                            <a href="live_map.html?busId=${bus.busId}" class="track-button">Track</a>
+                        </div>
+                    `;
+                    busListContainer.appendChild(busItem);
+                });
+
+                // Show the results section with a smooth animation
+                resultsSection.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
+
